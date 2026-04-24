@@ -8,10 +8,12 @@ import dj_database_url
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+DEFAULT_FRONTEND_ORIGIN = "https://hiigsi-tracker.vercel.app"
+DEFAULT_BACKEND_HOST = "hiigsi-app.onrender.com"
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-insecure-secret-key-change-me")
 DEBUG = os.getenv("DJANGO_DEBUG", "true").lower() == "true"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", f"localhost,127.0.0.1,{DEFAULT_BACKEND_HOST}").split(",")
 render_hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME")
 if render_hostname and render_hostname not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(render_hostname)
@@ -173,10 +175,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "http://localhost:5173").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
+    f"http://localhost:5173,{DEFAULT_FRONTEND_ORIGIN}",
+).split(",")
 CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "true").lower() == "true"
 DEV_ORIGIN = os.getenv("DEV_ORIGIN", "http://localhost:5173")
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+CORS_ALLOWED_ORIGINS = os.getenv(
+    "CORS_ALLOWED_ORIGINS",
+    f"http://localhost:5173,{DEFAULT_FRONTEND_ORIGIN}",
+).split(",")
 if render_hostname:
     render_origin = f"https://{render_hostname}"
     if render_origin not in CSRF_TRUSTED_ORIGINS:
@@ -231,6 +239,6 @@ LOGGING = {
 }
 
 # WebAuthn
-WEBAUTHN_RP_ID = os.getenv("WEBAUTHN_RP_ID", "localhost")
+WEBAUTHN_RP_ID = os.getenv("WEBAUTHN_RP_ID", "hiigsi-tracker.vercel.app")
 WEBAUTHN_RP_NAME = os.getenv("WEBAUTHN_RP_NAME", "Hiigsi Tracker")
-WEBAUTHN_ORIGIN = os.getenv("WEBAUTHN_ORIGIN", "http://localhost:5173")
+WEBAUTHN_ORIGIN = os.getenv("WEBAUTHN_ORIGIN", DEFAULT_FRONTEND_ORIGIN)
