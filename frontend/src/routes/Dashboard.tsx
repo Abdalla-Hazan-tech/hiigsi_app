@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ShoppingBag, Star, Clock, CheckCircle2, TrendingUp, Calendar } from 'lucide-react';
+import { ShoppingBag, Clock, CheckCircle2, TrendingUp } from 'lucide-react';
 import client from '../api/client';
+import Logo from '../components/common/Logo';
 import { useAuthStore } from '../store/useAuthStore';
+
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -147,11 +149,15 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="flex-1 p-8 space-y-8 overflow-y-auto">
-            <header>
-                <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-                <p className="text-slate-400">Welcome back, {user?.display_name}! Here's your task consistency this week.</p>
+        <div className="flex-1 space-y-6 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
+                <Logo size={48} />
+                <div>
+                    <h1 className="text-2xl font-bold text-white sm:text-3xl">Dashboard Overview</h1>
+                    <p className="text-slate-400">Welcome back, {user?.display_name}! Here's your task consistency this week.</p>
+                </div>
             </header>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatsCard
@@ -185,8 +191,8 @@ export default function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="glass-panel p-6 rounded-2xl">
-                    <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                <div className="glass-panel rounded-2xl p-4 sm:p-6">
+                    <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold sm:mb-6 sm:text-xl">
                         <CheckCircle2 className="w-5 h-5 text-green-400" /> Completion Trend
                     </h3>
                     <div className="h-[250px]">
@@ -194,8 +200,8 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="glass-panel p-6 rounded-2xl">
-                    <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                <div className="glass-panel rounded-2xl p-4 sm:p-6">
+                    <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold sm:mb-6 sm:text-xl">
                         <Clock className="w-5 h-5 text-red-400" /> Incompletion Trend
                     </h3>
                     <div className="h-[250px]">
@@ -206,7 +212,7 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Daily Chart */}
-                <div className="glass-panel p-6 rounded-2xl h-full flex flex-col">
+                <div className="glass-panel h-full rounded-2xl p-4 sm:p-6 flex flex-col">
                     <h3 className="text-lg font-semibold mb-4 text-center">Daily Performance</h3>
                     <div className="flex-1 flex items-center justify-center min-h-[200px]">
                         {dailyPlanned > 0 ? (
@@ -239,7 +245,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Weekly Chart */}
-                <div className="glass-panel p-6 rounded-2xl h-full flex flex-col">
+                <div className="glass-panel h-full rounded-2xl p-4 sm:p-6 flex flex-col">
                     <h3 className="text-lg font-semibold mb-4 text-center">Weekly Performance</h3>
                     <div className="flex-1 flex items-center justify-center min-h-[200px]">
                         {weeklyPlanned > 0 ? (
@@ -272,7 +278,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Monthly Chart */}
-                <div className="glass-panel p-6 rounded-2xl h-full flex flex-col">
+                <div className="glass-panel h-full rounded-2xl p-4 sm:p-6 flex flex-col">
                     <h3 className="text-lg font-semibold mb-4 text-center">Monthly Performance</h3>
                     <div className="flex-1 flex items-center justify-center min-h-[200px]">
                         {monthlyPlanned > 0 ? (
@@ -305,7 +311,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Yearly Chart */}
-                <div className="glass-panel p-6 rounded-2xl h-full flex flex-col">
+                <div className="glass-panel h-full rounded-2xl p-4 sm:p-6 flex flex-col">
                     <h3 className="text-lg font-semibold mb-4 text-center">Yearly Performance</h3>
                     <div className="flex-1 flex items-center justify-center min-h-[200px]">
                         {yearlyPlanned > 0 ? (

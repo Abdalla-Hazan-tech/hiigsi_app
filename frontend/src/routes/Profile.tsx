@@ -173,35 +173,37 @@ export default function Profile() {
     };
 
     return (
-        <div className="flex-1 p-8 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
             <div className="max-w-4xl mx-auto">
                 <header className="mb-10">
-                    <h1 className="text-3xl font-bold mb-2">Account Settings</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold mb-2">Account Settings</h1>
                     <p className="text-slate-400">Manage your profile information and security preferences.</p>
                 </header>
 
-                <div className="flex gap-8">
-                    <aside className="w-56 space-y-1">
+                <div className="flex flex-col gap-6 md:flex-row md:gap-8">
+                    <aside className="md:w-56">
+                        <div className="flex gap-2 overflow-x-auto md:block md:space-y-1">
                         <button
                             onClick={() => setActiveTab('general')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'general' ? 'bg-primary-500/20 text-primary-400 font-semibold' : 'text-slate-400 hover:bg-white/5'
+                            className={`flex min-w-fit items-center gap-3 rounded-xl px-4 py-3 transition-all md:w-full ${activeTab === 'general' ? 'bg-primary-500/20 text-primary-400 font-semibold' : 'text-slate-400 hover:bg-white/5'
                                 }`}
                         >
                             <User className="w-5 h-5" /> General
                         </button>
                         <button
                             onClick={() => setActiveTab('security')}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'security' ? 'bg-primary-500/20 text-primary-400 font-semibold' : 'text-slate-400 hover:bg-white/5'
+                            className={`flex min-w-fit items-center gap-3 rounded-xl px-4 py-3 transition-all md:w-full ${activeTab === 'security' ? 'bg-primary-500/20 text-primary-400 font-semibold' : 'text-slate-400 hover:bg-white/5'
                                 }`}
                         >
                             <Shield className="w-5 h-5" /> Security
                         </button>
+                        </div>
                     </aside>
 
                     <main className="flex-1">
                         {activeTab === 'general' && (
                             <div className="glass-panel p-8 rounded-3xl space-y-8 animate-in">
-                                <div className="flex items-center gap-6">
+                                <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
                                     <div className="relative group">
                                         <div className={`w-24 h-24 rounded-full bg-slate-800 border-2 ${uploading ? 'border-primary-500 animate-pulse' : 'border-primary-500/30'} overflow-hidden shadow-2xl transition-all`}>
                                             {user?.avatar_url ? (
@@ -250,7 +252,7 @@ export default function Profile() {
                                 </div>
 
                                 <form onSubmit={handleUpdateProfile} className="space-y-6">
-                                    <div className="grid grid-cols-2 gap-6">
+                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                         <div>
                                             <label className="block text-sm font-medium text-slate-400 mb-2">First Name</label>
                                             <input
@@ -303,7 +305,7 @@ export default function Profile() {
 
                         {activeTab === 'security' && (
                             <div className="glass-panel p-8 rounded-3xl space-y-8 animate-in text-slate-200">
-                                <div className="p-6 bg-slate-900/50 rounded-2xl border border-slate-700 flex items-center justify-between">
+                                <div className="flex flex-col gap-4 rounded-2xl border border-slate-700 bg-slate-900/50 p-6 lg:flex-row lg:items-center lg:justify-between">
                                     <div className="flex items-center gap-4">
                                         <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-400">
                                             <Fingerprint className="w-6 h-6" />
@@ -316,13 +318,13 @@ export default function Profile() {
                                     <button 
                                         onClick={handleRegisterPasskey} 
                                         disabled={loading}
-                                        className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2 rounded-xl"
+                                        className="w-full rounded-xl bg-blue-600 px-6 py-2 font-bold text-white hover:bg-blue-500 lg:w-auto"
                                     >
                                         Add Passkey
                                     </button>
                                 </div>
 
-                                <div className="flex items-center justify-between">
+                                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                                     <div className="flex items-center gap-4">
                                         <div className={`p-3 rounded-2xl ${user?.is_mfa_enabled ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-400'}`}>
                                             <Shield className="w-6 h-6" />
@@ -333,11 +335,11 @@ export default function Profile() {
                                         </div>
                                     </div>
                                     {user?.is_mfa_enabled ? (
-                                        <button onClick={disableMFA} className="text-red-400 hover:text-red-300 font-semibold px-4 py-2 rounded-lg border border-red-400/20">
+                                        <button onClick={disableMFA} className="w-full rounded-lg border border-red-400/20 px-4 py-2 font-semibold text-red-400 hover:text-red-300 lg:w-auto">
                                             Disable
                                         </button>
                                     ) : (
-                                        <button onClick={setupMFA} className="bg-primary-600 hover:bg-primary-500 text-white font-bold px-6 py-2 rounded-xl">
+                                        <button onClick={setupMFA} className="w-full rounded-xl bg-primary-600 px-6 py-2 font-bold text-white hover:bg-primary-500 lg:w-auto">
                                             Setup MFA
                                         </button>
                                     )}
@@ -356,7 +358,7 @@ export default function Profile() {
                                             </div>
                                         </div>
 
-                                        <form onSubmit={enableMFA} className="flex gap-4">
+                                        <form onSubmit={enableMFA} className="flex flex-col gap-4 sm:flex-row">
                                             <input
                                                 type="text"
                                                 placeholder="000000"
@@ -366,7 +368,7 @@ export default function Profile() {
                                                 onChange={e => setTotpCode(e.target.value)}
                                                 required
                                             />
-                                            <button className="bg-primary-600 hover:bg-primary-500 text-white font-bold px-6 rounded-xl">
+                                            <button className="rounded-xl bg-primary-600 px-6 py-3 font-bold text-white hover:bg-primary-500">
                                                 Enable
                                             </button>
                                         </form>

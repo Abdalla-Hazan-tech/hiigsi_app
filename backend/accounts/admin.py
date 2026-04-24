@@ -8,7 +8,7 @@ from .models import User
 class UserAdmin(DjangoUserAdmin):
     fieldsets = DjangoUserAdmin.fieldsets + (
         (
-            "ProTrack",
+            "Hiigsi Tracker",
             {
                 "fields": (
                     "is_mfa_enabled",

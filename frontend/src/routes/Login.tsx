@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { LogIn, ShieldCheck, Fingerprint } from 'lucide-react';
+import { startAuthentication } from '@simplewebauthn/browser';
 import { useAuthStore } from '../store/useAuthStore';
 import client from '../api/client';
-import { LogIn, UserPlus, ShieldCheck, Fingerprint } from 'lucide-react';
-import { startAuthentication } from '@simplewebauthn/browser';
+import Logo from '../components/common/Logo';
 
 export default function LoginPage({ onToggle }: { onToggle: () => void }) {
     const [username, setUsername] = useState('');
@@ -19,15 +20,13 @@ export default function LoginPage({ onToggle }: { onToggle: () => void }) {
         e.preventDefault();
         setLoading(true);
         setError('');
-        const trimmedUser = username.trim();
-        const trimmedPass = password.trim();
-        console.log('Attempting login for:', trimmedUser);
+
         try {
-            const res = await client.post('/auth/login/', {
-                username: trimmedUser,
-                password: trimmedPass
+            const res = await client.post('auth/login/', {
+                username: username.trim(),
+                password: password.trim(),
             });
-            console.log('Login response:', res.status, res.data);
+
             if (res.data.mfa_required) {
                 setMfaRequired(true);
                 setMfaTicket(res.data.mfa_ticket);
@@ -35,7 +34,6 @@ export default function LoginPage({ onToggle }: { onToggle: () => void }) {
                 setAuth(res.data.user, res.data.access, res.data.refresh);
             }
         } catch (err: any) {
-            console.error('Login error detail:', err);
             if (!err.response) {
                 setError('Cannot reach server. Is the backend running?');
             } else if (err.response.status === 403) {
@@ -51,8 +49,9 @@ export default function LoginPage({ onToggle }: { onToggle: () => void }) {
     const handleMfaVerify = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+
         try {
-            const res = await client.post('/auth/mfa/verify/', { mfa_ticket: mfaTicket, totp });
+            const res = await client.post('auth/mfa/verify/', { mfa_ticket: mfaTicket, totp });
             setAuth(res.data.user, res.data.access, res.data.refresh);
         } catch (err: any) {
             setError(err.response?.data?.detail || 'Invalid code');
@@ -64,22 +63,15 @@ export default function LoginPage({ onToggle }: { onToggle: () => void }) {
     const handlePasskeyLogin = async () => {
         setLoading(true);
         setError('');
+
         try {
-            // 1. Get options from backend (optionally send username if provided)
             const startRes = await client.post('security/webauthn/login/start/', {
-                username: username.trim() || undefined
+                username: username.trim() || undefined,
             });
-            const options = startRes.data;
-
-            // 2. Pass to browser API
-            const credential = await startAuthentication(options);
-
-            // 3. Send to backend for verification
+            const credential = await startAuthentication(startRes.data);
             const verifyRes = await client.post('security/webauthn/login/finish/', credential);
-            
             setAuth(verifyRes.data.user, verifyRes.data.access, verifyRes.data.refresh);
         } catch (err: any) {
-            console.error(err);
             if (err.name === 'NotAllowedError') {
                 setError('Passkey login cancelled or timed out.');
             } else {
@@ -92,29 +84,29 @@ export default function LoginPage({ onToggle }: { onToggle: () => void }) {
 
     if (mfaRequired) {
         return (
-            <div className="glass-panel p-8 rounded-2xl shadow-2xl max-w-md w-full animate-in">
-                <div className="flex justify-center mb-6">
-                    <div className="bg-primary-500/20 p-4 rounded-full">
-                        <ShieldCheck className="w-8 h-8 text-primary-500" />
+            <div className="glass-panel w-full max-w-md rounded-2xl p-8 shadow-2xl animate-in">
+                <div className="mb-6 flex justify-center">
+                    <div className="rounded-full bg-primary-500/20 p-4">
+                        <ShieldCheck className="h-8 w-8 text-primary-500" />
                     </div>
                 </div>
-                <h2 className="text-2xl font-bold text-center mb-2">Two-Factor Authentication</h2>
-                <p className="text-slate-400 text-center mb-6">Enter the code from your authenticator app.</p>
+                <h2 className="mb-2 text-center text-2xl font-bold">Two-Factor Authentication</h2>
+                <p className="mb-6 text-center text-slate-400">Enter the code from your authenticator app.</p>
 
                 <form onSubmit={handleMfaVerify} className="space-y-4">
                     <input
                         type="text"
                         placeholder="000000"
-                        className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-center text-2xl tracking-widest focus:ring-2 focus:ring-primary-500 outline-none"
+                        className="w-full rounded-lg border border-slate-700 bg-slate-900/50 px-4 py-3 text-center text-2xl tracking-widest outline-none focus:ring-2 focus:ring-primary-500"
                         value={totp}
                         onChange={(e) => setTotp(e.target.value)}
                         maxLength={6}
                         required
                     />
-                    {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+                    {error && <p className="text-center text-sm text-red-400">{error}</p>}
                     <button
                         disabled={loading}
-                        className="w-full bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-white font-bold py-3 rounded-lg transition-all"
+                        className="w-full rounded-lg bg-primary-600 py-3 font-bold text-white transition-all hover:bg-primary-500 disabled:opacity-50"
                     >
                         {loading ? 'Verifying...' : 'Verify & Login'}
                     </button>
@@ -124,64 +116,88 @@ export default function LoginPage({ onToggle }: { onToggle: () => void }) {
     }
 
     return (
-        <div className="glass-panel p-8 rounded-2xl shadow-2xl max-w-md w-full animate-in">
-            <h2 className="text-3xl font-bold text-center mb-8">Welcome Back</h2>
-            <form onSubmit={handleLogin} className="space-y-6">
-                <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">Username</label>
-                    <input
-                        type="text"
-                        className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none transition-all"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">Password</label>
-                    <input
-                        type="password"
-                        className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none transition-all"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
+        <div className="glass-panel flex w-full max-w-4xl flex-col overflow-hidden rounded-3xl border border-white/10 shadow-2xl animate-in lg:flex-row">
+            <div className="relative flex flex-col items-center justify-center overflow-hidden border-b border-white/10 bg-primary-600/5 p-8 text-center lg:w-5/12 lg:border-b-0 lg:border-r lg:px-8 lg:py-10">
+                <Logo size={90} className="mb-6" />
+                <h2 className="mb-2 text-4xl font-black tracking-tighter text-white">Hiigsi</h2>
+                <h3 className="mb-4 ml-1 text-lg font-bold uppercase tracking-[0.2em] text-cyan-400">Tracker</h3>
+                <div className="mb-6 h-1 w-16 rounded-full bg-gradient-to-r from-cyan-400 to-primary-500" />
+                <p className="max-w-[200px] text-xs font-medium leading-relaxed text-slate-400">
+                    Master your time. Reach your goals.
+                </p>
+            </div>
+
+            <div className="flex-1 p-8 lg:p-12">
+                <div className="mb-8">
+                    <h2 className="mb-1 text-2xl font-bold text-white">Welcome Back</h2>
+                    <p className="text-sm text-slate-500">Sign in to your account</p>
                 </div>
 
-                {error && <p className="text-red-400 text-sm">{error}</p>}
-
-                <button
-                    disabled={loading}
-                    className="w-full bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-white font-bold py-3 rounded-xl shadow-lg shadow-primary-500/20 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
-                >
-                    {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><LogIn className="w-5 h-5" /> Sign In</>}
-                </button>
-                
-                <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-slate-700"></div>
+                <form onSubmit={handleLogin} className="space-y-5">
+                    <div>
+                        <label className="ml-1 mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">Username / Email</label>
+                        <input
+                            type="text"
+                            className="w-full rounded-xl border border-slate-700/50 bg-slate-900/40 px-4 py-3 text-white outline-none transition-all placeholder:text-slate-600 focus:ring-2 focus:ring-primary-500"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="john_doe"
+                            required
+                        />
                     </div>
-                    <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-slate-900 text-slate-500">Or continue with</span>
+                    <div>
+                        <label className="ml-1 mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">Password</label>
+                        <input
+                            type="password"
+                            className="w-full rounded-xl border border-slate-700/50 bg-slate-900/40 px-4 py-3 text-white outline-none transition-all placeholder:text-slate-600 focus:ring-2 focus:ring-primary-500"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Password"
+                            required
+                        />
                     </div>
-                </div>
 
-                <button
-                    type="button"
-                    onClick={handlePasskeyLogin}
-                    disabled={loading}
-                    className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
-                >
-                    <Fingerprint className="w-5 h-5 text-blue-400" /> Sign in with Passkey
-                </button>
-            </form>
+                    {error && (
+                        <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm text-red-400">
+                            {error}
+                        </div>
+                    )}
 
-            <p className="mt-8 text-center text-slate-400">
-                Don't have an account?{' '}
-                <button onClick={onToggle} className="text-primary-400 hover:text-primary-300 font-medium">
-                    Create one
-                </button>
-            </p>
+                    <div className="pt-2">
+                        <button
+                            disabled={loading}
+                            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 py-3.5 font-bold text-white shadow-lg shadow-primary-500/20 transition-all hover:scale-[1.01] hover:bg-primary-500 active:scale-[0.99] disabled:opacity-50"
+                        >
+                            {loading ? <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" /> : <><LogIn className="h-5 w-5" /> Sign In</>}
+                        </button>
+                    </div>
+
+                    <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-slate-800" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase tracking-widest">
+                            <span className="bg-[#020617] px-3 text-slate-600">Secure Access</span>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handlePasskeyLogin}
+                        disabled={loading}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-700/50 bg-slate-800/40 py-3 font-medium text-white transition-all hover:bg-slate-800/60 disabled:opacity-50"
+                    >
+                        <Fingerprint className="h-5 w-5 text-primary-400" /> Passkey Sign-In
+                    </button>
+                </form>
+
+                <p className="mt-8 text-center text-sm text-slate-500">
+                    First time here?{' '}
+                    <button onClick={onToggle} className="font-bold text-primary-400 hover:text-primary-300">
+                        Create Account
+                    </button>
+                </p>
+            </div>
         </div>
     );
 }

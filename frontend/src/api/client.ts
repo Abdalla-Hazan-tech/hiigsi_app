@@ -30,14 +30,16 @@ client.interceptors.response.use(
             const refreshToken = localStorage.getItem('refresh_token');
             if (refreshToken) {
                 try {
-                    const res = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, { refresh: refreshToken });
+                    const refreshUrl = new URL('auth/token/refresh/', API_BASE_URL).toString();
+                    const res = await axios.post(refreshUrl, { refresh: refreshToken });
                     localStorage.setItem('access_token', res.data.access);
                     client.defaults.headers.common['Authorization'] = `Bearer ${res.data.access}`;
                     return client(originalRequest);
                 } catch (refreshError) {
                     // Logout user if refresh fails
-                    localStorage.clear();
-                    window.location.href = '/login';
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('refresh_token');
+                    window.location.href = '/';
                 }
             }
         }

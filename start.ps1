@@ -1,5 +1,5 @@
 # Start Backend in a new window
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd backend; python manage.py runserver"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd backend; python manage.py runserver 0.0.0.0:8000"
 
 # Start Frontend in a new window
 # Using cmd /c for npm to avoid execution policy issues

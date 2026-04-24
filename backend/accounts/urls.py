@@ -11,6 +11,7 @@ from .views import (
     LogoutView,
     RegisterView,
     ProfileUpdateView,
+    PasswordChangeView,
 )
 
 urlpatterns = [
@@ -19,6 +20,7 @@ urlpatterns = [
     path("mfa/verify/", MFAVerifyView.as_view(), name="mfa-verify"),
     path("me/", MeView.as_view(), name="me"),
     path("profile/update/", ProfileUpdateView.as_view(), name="profile-update"),
+    path("password-change/", PasswordChangeView.as_view(), name="password-change"),
     path("mfa/setup/", MFASetupView.as_view(), name="mfa-setup"),
     path("mfa/enable/", MFAEnableView.as_view(), name="mfa-enable"),
     path("mfa/disable/", MFADisableView.as_view(), name="mfa-disable"),

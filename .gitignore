@@ -1,0 +1,62 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+*.pem
+*.key
+*.p12
+*.p8
+*.jks
+*.mobileprovision
+
+# Python / Django
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+*.sqlite3
+*.sqlite3-journal
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+backend/pytest-cache-files-*/
+
+# Node / web
+node_modules/
+dist/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+.vite/
+.vercel/
+
+# Expo / React Native
+.expo/
+web-build/
+android/
+ios/
+.metro-health-check*
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

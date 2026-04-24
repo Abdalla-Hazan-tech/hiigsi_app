@@ -177,7 +177,7 @@ class MFASetupView(APIView):
             device = TOTPDevice.objects.create(user=user, confirmed=False, name="default")
 
         # Build otpauth URI manually to be safe
-        issuer = os.getenv("MFA_ISSUER", "ProTrack")
+        issuer = os.getenv("MFA_ISSUER", "Hiigsi Tracker")
         account_name = user.email or user.username
         # Convert device secret to base32 for otpauth URI
         secret_b32 = base64.b32encode(device.bin_key).decode("utf-8").replace("=", "")
@@ -275,6 +275,22 @@ class LogoutView(APIView):
         except Exception:
             pass
         _log(request.user, SecurityLog.Action.LOGOUT, request)
+        return Response({"status": "ok"}, status=status.HTTP_200_OK)
+
+
+class PasswordChangeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_classes = [UserThrottle]
+
+    def post(self, request):
+        serializer = PasswordChangeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        if not user.check_password(serializer.validated_data["old_password"]):
+            return Response({"old_password": ["Wrong password"]}, status=status.HTTP_400_BAD_REQUEST)
+        user.set_password(serializer.validated_data["new_password"])
+        user.save()
+        _log(user, SecurityLog.Action.PASSWORD_CHANGE, request)
         return Response({"status": "ok"}, status=status.HTTP_200_OK)
 
 

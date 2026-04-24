@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: hiigsi-backend
+    env: python
+    rootDir: backend
+    buildCommand: ./build.sh
+    startCommand: gunicorn hiigsi.wsgi:application
+    healthCheckPath: /health/
+    autoDeploy: true
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: CORS_ALLOW_ALL_ORIGINS
+        value: "false"
+      - key: SECURE_SSL_REDIRECT
+        value: "true"
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: CSRF_COOKIE_SECURE
+        value: "true"
+      - key: SECURE_HSTS_SECONDS
+        value: "31536000"
+      - key: SECURE_HSTS_PRELOAD
+        value: "true"
+      - key: SECURE_HSTS_INCLUDE_SUBDOMAINS
+        value: "true"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true

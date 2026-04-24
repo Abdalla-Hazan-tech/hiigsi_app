@@ -1,5 +1,5 @@
 import { useEffect, useState, FormEvent } from 'react';
-import { Plus, Tag, X, Edit2, Trash2, Check } from 'lucide-react';
+import { Plus, Tag, X, Trash2, Check } from 'lucide-react';
 import client from '../api/client';
 
 interface Category {
@@ -67,15 +67,15 @@ export default function Categories() {
     );
 
     return (
-        <div className="flex-1 p-8 overflow-y-auto animate-fade-in text-white">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 animate-fade-in text-white">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
                 <div>
-                    <h1 className="text-4xl font-black tracking-tight mb-2">Categories</h1>
+                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight mb-2">Categories</h1>
                     <p className="text-slate-400 font-medium">Organize your tasks with precision.</p>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-primary-600 hover:bg-primary-500 text-white px-8 py-3.5 rounded-2xl flex items-center gap-2 font-bold shadow-[0_10px_20px_rgba(2,132,199,0.2)] hover:translate-y-[-2px] transition-all"
+                    className="w-full md:w-auto bg-primary-600 hover:bg-primary-500 text-white px-8 py-3.5 rounded-2xl flex items-center justify-center gap-2 font-bold shadow-[0_10px_20px_rgba(2,132,199,0.2)] hover:translate-y-[-2px] transition-all"
                 >
                     <Plus className="w-5 h-5" />
                     New Category
@@ -102,7 +102,7 @@ export default function Categories() {
                                     </div>
                                     <span className="text-xl font-bold tracking-tight">{category.name}</span>
                                 </div>
-                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                <div className="flex items-center gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all">
                                     <button
                                         onClick={() => deleteCategory(category.id)}
                                         className="p-2.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
@@ -128,7 +128,7 @@ export default function Categories() {
 
             {isModalOpen && (
                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
-                    <div className="glass-panel p-8 rounded-[2rem] w-full max-w-md shadow-2xl animate-slide-up border border-slate-700/50">
+                    <div className="glass-panel w-full max-w-md rounded-[2rem] border border-slate-700/50 p-6 sm:p-8 shadow-2xl animate-slide-up">
                         <div className="flex justify-between items-center mb-8">
                             <div>
                                 <h2 className="text-3xl font-black text-white">New Category</h2>

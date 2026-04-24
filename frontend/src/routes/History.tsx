@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Calendar, CheckCircle2, Search, Filter, ArrowUpDown } from 'lucide-react';
+import { CheckCircle2, Search } from 'lucide-react';
 import client from '../api/client';
 
 interface HistoryItem {
@@ -43,10 +43,10 @@ export default function History() {
     }
 
     return (
-        <div className="flex-1 p-8 space-y-8 overflow-y-auto">
+        <div className="flex-1 space-y-6 overflow-y-auto p-4 sm:p-6 lg:p-8">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold">Activity History</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Activity History</h1>
                     <p className="text-slate-400">Review all your completed tasks over the last 90 days.</p>
                 </div>
 
@@ -62,7 +62,43 @@ export default function History() {
                 </div>
             </header>
 
-            <div className="glass-panel rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
+            <div className="space-y-4 sm:hidden">
+                {filteredHistory.length > 0 ? (
+                    filteredHistory.map((item) => (
+                        <div key={item.id} className="glass-panel rounded-2xl p-4">
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="min-w-0">
+                                    <p className="truncate font-bold text-slate-200">{item.activity_title}</p>
+                                    <div className="mt-2 flex items-center gap-2 text-sm text-slate-300">
+                                        <div
+                                            className="h-2.5 w-2.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]"
+                                            style={{ backgroundColor: item.category_color }}
+                                        />
+                                        <span className="truncate">{item.category_name}</span>
+                                    </div>
+                                    <p className="mt-2 text-xs text-slate-400">
+                                        {new Date(item.date).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })}
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-2 rounded-lg bg-green-400/10 px-3 py-1.5 text-sm font-bold text-green-400">
+                                    <CheckCircle2 className="h-4 w-4" />
+                                    Done
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="glass-panel rounded-2xl px-6 py-16 text-center text-slate-500">
+                        No historical data found.
+                    </div>
+                )}
+            </div>
+
+            <div className="hidden sm:block glass-panel rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>

@@ -1,7 +1,7 @@
 import { useEffect, useState, FormEvent } from 'react';
 import { Plus, CheckCircle2, Circle, Calendar, X, Trash2 } from 'lucide-react';
 import client from '../api/client';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { Activity, Category } from '../types';
 
 export default function Activities() {
@@ -121,15 +121,15 @@ export default function Activities() {
     );
 
     return (
-        <div className="flex-1 p-8 overflow-y-auto animate-fade-in">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 animate-fade-in">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h1 className="text-4xl font-bold tracking-tight text-white mb-1">Daily Tasks</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-1">Daily Tasks</h1>
                     <p className="text-slate-400 font-medium">Elevate your productivity, one task at a time.</p>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-primary-600 hover:bg-primary-500 text-white px-8 py-3.5 rounded-2xl flex items-center gap-2 font-bold shadow-[0_0_20px_rgba(2,132,199,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="w-full md:w-auto bg-primary-600 hover:bg-primary-500 text-white px-8 py-3.5 rounded-2xl flex items-center justify-center gap-2 font-bold shadow-[0_0_20px_rgba(2,132,199,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                     <Plus className="w-5 h-5" />
                     New Task
@@ -137,7 +137,7 @@ export default function Activities() {
             </div>
 
             {/* Date Picker / Header */}
-            <div className="flex items-center gap-4 mb-8 bg-slate-900/40 p-5 rounded-2xl border border-slate-800/50 backdrop-blur-md">
+            <div className="mb-8 flex flex-col gap-4 rounded-2xl border border-slate-800/50 bg-slate-900/40 p-4 backdrop-blur-md sm:flex-row sm:items-center sm:p-5">
                 <div className="bg-primary-500/10 p-2 rounded-lg">
                     <Calendar className="w-5 h-5 text-primary-400" />
                 </div>
@@ -159,7 +159,7 @@ export default function Activities() {
                     activities.map((activity, index) => (
                         <div
                             key={activity.id}
-                            className="glass-panel p-5 rounded-2xl flex items-center gap-6 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all group animate-slide-up"
+                            className="glass-panel group flex flex-col gap-4 rounded-2xl p-4 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] sm:flex-row sm:items-center sm:gap-6 sm:p-5 animate-slide-up"
                             style={{ animationDelay: `${index * 0.05}s` }}
                         >
                             <div className="flex-1 min-w-0">
@@ -180,12 +180,12 @@ export default function Activities() {
                                         </span>
                                     )}
                                 </div>
-                                <p className={`text-sm truncate transition-colors ${activity.is_completed ? 'text-slate-600' : 'text-slate-400 font-medium'}`}>
+                                <p className={`text-sm break-words transition-colors ${activity.is_completed ? 'text-slate-600' : 'text-slate-400 font-medium'}`}>
                                     {activity.description || 'No description provided'}
                                 </p>
                             </div>
 
-                            <div className="flex flex-col items-center gap-2">
+                            <div className="flex flex-row items-center justify-between gap-4 sm:flex-col">
                                 {activity.daily_occurrences > 1 ? (
                                     // Multi-occurrence view
                                     <div className="flex items-center gap-1">
@@ -234,7 +234,7 @@ export default function Activities() {
 
                             <button
                                 onClick={() => deleteActivity(activity.id)}
-                                className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-500 hover:bg-red-500/10 p-2.5 rounded-xl transition-all"
+                                className="self-end rounded-xl p-2.5 text-slate-600 transition-all hover:bg-red-500/10 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                                 title="Delete Task"
                             >
                                 <Trash2 className="w-5 h-5" />
@@ -254,7 +254,7 @@ export default function Activities() {
 
             {isModalOpen && (
                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
-                    <div className="glass-panel p-8 rounded-[2rem] w-full max-w-lg shadow-2xl animate-slide-up border border-slate-700/50">
+                    <div className="glass-panel max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[2rem] border border-slate-700/50 p-6 sm:p-8 shadow-2xl animate-slide-up">
                         <div className="flex justify-between items-center mb-8">
                             <div>
                                 <h2 className="text-3xl font-black text-white">New Task</h2>
